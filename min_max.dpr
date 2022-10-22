@@ -1,4 +1,4 @@
-program Project1;
+program min_max;
 
 {$APPTYPE CONSOLE}
 {$R *.res}
@@ -67,11 +67,13 @@ function main_ai(local, level: integer): integer;
 var
   min_max, num: integer;
 begin
+  check_free_space;
+  if Length(free_space) = 0 then
+    Exit(0);
   if local = p then
     min_max := -100
   else
     min_max := 100;
-  check_free_space;
   for var i in free_space do
   begin
     board[i - 1] := local;
@@ -150,7 +152,8 @@ begin
       p := change_player(p);
       board[main_ai(p, 1) - 1] := p;
       display;
-    until win_player(p) <> 0;
+      check_free_space;
+    until (win_player(p) <> 0) or (Length(free_space) = 0);
     game_over;
   except
     on E: Exception do
