@@ -12,8 +12,16 @@ const
   peke = 2;
 
 var
-  board, free_space: TArray<integer>;
+  board: TArray<integer>;
   p: integer;
+
+function free_space: TArray<integer>;
+begin
+  result := [];
+  for var i := 0 to High(board) do
+    if board[i] = 0 then
+      result := result + [i + 1];
+end;
 
 function win_player(player: integer): integer;
 var
@@ -55,19 +63,10 @@ begin
   end;
 end;
 
-procedure check_free_space;
-begin
-  free_space := [];
-  for var i := 1 to 9 do
-    if board[i - 1] = 0 then
-      free_space := free_space + [i];
-end;
-
 function main_ai(local, level: integer): integer;
 var
   min_max, num: integer;
 begin
-  check_free_space;
   if Length(free_space) = 0 then
     Exit(0);
   if local = p then
@@ -152,7 +151,6 @@ begin
       p := change_player(p);
       board[main_ai(p, 1) - 1] := p;
       display;
-      check_free_space;
     until (win_player(p) <> 0) or (Length(free_space) = 0);
     game_over;
   except
