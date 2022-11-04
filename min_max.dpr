@@ -70,9 +70,9 @@ begin
   if Length(free_space) = 0 then
     Exit(0);
   if local = p then
-    min_max := -100
+    min_max := -100000
   else
-    min_max := 100;
+    min_max := 100000;
   for var i in free_space do
   begin
     board[i - 1] := local;
