@@ -34,7 +34,7 @@ type
     function IsGameOver(player: Boolean; var res: integer): Boolean;
     procedure GameOver(res: integer);
     procedure InitGame;
-    function Execute(player: Boolean; level: integer): integer;
+    function Execute(player: Boolean; level: integer = 0): integer;
     function NeededScore(player: Boolean; ints: TArray<integer>): integer;
     procedure HitButton(score: integer; player: Boolean); overload;
     procedure HitButton(spd: TSpeedButton; player: Boolean); overload;
@@ -51,6 +51,10 @@ implementation
 {$R *.dfm}
 
 uses System.Math;
+
+const
+  Hantei: array of array of integer = [[1, 2, 3], [4, 5, 6], [7, 8, 9],
+    [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]];
 
 function TForm1.ButtonNumber(score: integer): integer;
 begin
@@ -155,13 +159,13 @@ begin
     Caps[i].Caption := '';
     Chars[i] := '';
   end;
-  score := Execute(Sente, 0);
+  score := Execute(Sente);
   if not Sente then
   begin
     HitButton(score, false);
     Sente := true;
   end;
-  score := Execute(Sente, 0);
+  score := Execute(Sente);
   Caps[ButtonNumber(score)].Caption := 'ok'
 end;
 
@@ -171,38 +175,22 @@ begin
     res := 1
   else
     res := 2;
-  if Shouhai(player, [1, 2, 3]) or Shouhai(player, [4, 5, 6]) or
-    Shouhai(player, [7, 8, 9]) or Shouhai(player, [1, 4, 7]) or
-    Shouhai(player, [2, 5, 8]) or Shouhai(player, [3, 6, 9]) or
-    Shouhai(player, [1, 5, 9]) or Shouhai(player, [3, 5, 7]) then
-    result := true
-  else
-  begin
-    for var c in Chars do
-      if c = '' then
-        Exit(false);
-    res := 0;
-    result := true;
-  end;
+  for var arr in Hantei do
+    if Shouhai(player, arr) then
+      Exit(true);
+  for var c in Chars do
+    if c = '' then
+      Exit(false);
+  res := 0;
+  result := true;
 end;
 
 function TForm1.NeededScore(player: Boolean; ints: TArray<integer>): integer;
-var
-  minmax: integer;
 begin
   if player then
-    minmax := -1
+    result := MaxIntValue(ints)
   else
-    minmax := 1;
-  for var int in ints do
-    if player then
-    begin
-      if minmax < int then
-        minmax := int;
-    end
-    else if minmax > int then
-      minmax := int;
-  result := minmax;
+    result := MinIntValue(ints);
 end;
 
 procedure TForm1.RadioButton2Click(Sender: TObject);
@@ -246,13 +234,13 @@ begin
       GameOver(res)
     else
     begin
-      score := Execute(not Sente, 0);
+      score := Execute(not Sente);
       HitButton(score, not Sente);
       if IsGameOver(not Sente, res) then
         GameOver(res)
       else
       begin
-        score := Execute(Sente, 0);
+        score := Execute(Sente);
         Caps[ButtonNumber(score)].Caption := 'ok';
       end;
     end;
