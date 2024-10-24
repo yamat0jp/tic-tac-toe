@@ -69,13 +69,15 @@ var
   num: integer;
   ints: TArray<integer>;
 begin
-  if IsGameOver(player, num) then
+  if IsGameOver(not player, num) then
   begin
     case num of
+      0:
+        result := 0;
+      1:
+        result := 10 - level;
       2:
-        result := -1;
-    else
-      result := num;
+        result := -10 + level;
     end;
     Exit;
   end;
